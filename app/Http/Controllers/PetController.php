@@ -17,7 +17,7 @@ class PetController extends Controller
         $pets = $response->json();
         
         
-        return view('pet.petIndex', compact('pets', 'statusRequest'));
+        return view('pet.index', compact('pets', 'statusRequest'));
     }
 
     /**
@@ -25,7 +25,7 @@ class PetController extends Controller
      */
     public function create()
     {
-        //
+        return view('pet.create');
     }
 
     /**
