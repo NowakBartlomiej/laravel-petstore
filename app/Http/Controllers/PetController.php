@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class PetController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $statusRequest = $request->input("status");
+        $response = Http::get(config('constants.base_url') . '/pet/findByStatus?status=' . $statusRequest);
+        $pets = $response->json();
+        
+        
+        return view('pet.petIndex', compact('pets'));
     }
 
     /**
