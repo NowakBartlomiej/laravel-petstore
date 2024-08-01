@@ -5,15 +5,26 @@
 
 <body>
 <div>
-    <form method="POST" action="" class="w-[50%] border border-gray-400 rounded-xl mx-10 my-10 px-5 py-5">
+    
+    <form method="POST" action="{{ route('pets.store') }}" class="w-[50%] border border-gray-400 rounded-xl mx-10 my-10 px-5 py-5">
         @csrf
         <h1 class="text-2xl pb-6">Add Pet</h1>
-
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="category">
                 Category
             </label>
+            @if ($errors->get('category'))
+                <div class=" text-red-500 rounded-xl">
+                    <ul>
+                        @foreach ($errors->get('category') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                    </ul>
+                </div>    
+            @endif
             <input
+                name="category"
+                value="{{ old('category') }}"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="category" type="text" placeholder="Enter pet category">
         </div>
@@ -22,39 +33,90 @@
             <label class="block text-gray-700 font-bold mb-2" for="name">
                 Name
             </label>
+            @if ($errors->get('name'))
+                <div class=" text-red-500 rounded-xl">
+                    <ul>
+                        @foreach ($errors->get('name') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                    </ul>
+                </div>    
+            @endif
             <input
+                name="name"
+                value="{{ old('name') }}"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="name" type="text" placeholder="Enter pet name">
-        </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2" for="service">
-                Status
-            </label>
-            <select
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="status" name="status">
-                <option value="">Select a status</option>
-                <option value="available">available</option>
-                <option value="pending">pending</option>
-                <option value="sold">sold</option>
-            </select>
         </div>
 
         <div id="photos">
             <label class="block text-gray-700 font-bold mb-2" for="service">
                 Photos
             </label>
-            <input class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photo" id="photo1" placeholder="Enter pet photo url"/>
+            @if ($errors->get('photoUrls'))
+                <div class=" text-red-500 rounded-xl">
+                    <ul>
+                        @foreach ($errors->get('photoUrls') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                    </ul>
+                </div>    
+            @endif
+            
+            <input value="{{ old('photoUrls') == null ? "" : old('photoUrls')[0] }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]" id="photo1" placeholder="Enter pet photo url"/>
             <button id="addPhoto" class="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded-full">Add More Photos</button>
+
+            @if (old('photoUrls') != null && count(old('photoUrls')) > 1)
+                @for ($i = 1; $i < count(old('photoUrls')); $i++)
+                <div><input value="{{ old('photoUrls')[$i] }}" placeholder="Enter pet photo url" id="{{ "photo" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]"/><a href="#" class="remove_photo_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
+                @endfor
+            @endif
         </div>
 
         <div id="tags">
+            @if ($errors->get('tags'))
+                <div class=" text-red-500 rounded-xl">
+                    <ul>
+                        @foreach ($errors->get('tags') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                    </ul>
+                </div>    
+            @endif
             <label class="block text-gray-700 font-bold mb-2" for="service">
                 Tags
             </label>
-            <input class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tag" id="tag1" placeholder="Enter pet tag"/>
+            <input value="{{ old('tags') == null ? "" : old('tags')[0] }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]" id="tag1" placeholder="Enter pet tag"/>
             <button id="addTag" class="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded-full">Add More Tags</button>
+        
+            @if (old('tags') != null && count(old('tags')) > 1)
+                @for ($i = 1; $i < count(old('tags')); $i++)
+                    <div><input value="{{ old('tags')[$i] }}" placeholder="Enter pet photo url" id="{{ "tags" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]"/><a href="#" class="remove_tag_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
+                @endfor
+            @endif
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="service">
+                Status
+            </label>
+            @if ($errors->get('status'))
+                <div class=" text-red-500 rounded-xl">
+                    <ul>
+                        @foreach ($errors->get('status') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                    </ul>
+                </div>    
+            @endif
+            <select
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="status" name="status">
+                <option value="">Select a status</option>
+                <option value="available" {{ old('status')=='available' ? 'selected' : ''  }}>available</option>
+                <option value="pending" {{ old('status')=='pending' ? 'selected' : ''  }}>pending</option>
+                <option value="sold" {{ old('status')=='sold' ? 'selected' : ''  }}>sold</option>
+            </select>
         </div>
 
         <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" type="submit">Submit</button>
@@ -74,13 +136,13 @@
     $(addPhoto).click(function(e) {
         e.preventDefault();
         ++i;
-        $(photos).append(`<div><input placeholder="Enter pet tag" id="tag`+i+`" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tag[]"/><a href="#" class="remove_photo_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>`)
+        $(photos).append(`<div><input placeholder="Enter pet photo url" id="photo`+i+`" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]"/><a href="#" class="remove_photo_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>`)
     })
 
     $(photos).on("click", ".remove_photo_field", function(e) {
         e.preventDefault();
         $(this).parent('div').remove();
-        j--;
+        i--;
     })
 
     // Tags
@@ -91,7 +153,7 @@
     $(addTag).click(function(e){ 
         e.preventDefault();
             ++j; 
-            $(tags).append(`<div><input placeholder="Enter pet tag" id="tag`+j+`" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tag[]"/><a href="#" class="remove_tag_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>`); 
+            $(tags).append(`<div><input placeholder="Enter pet tag" id="tag`+j+`" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]"/><a href="#" class="remove_tag_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>`); 
        
     });
 
