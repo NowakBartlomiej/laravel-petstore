@@ -4,6 +4,19 @@
 
 <div>
     <h1 class="text-3xl mb-4">Pets</h1>
+        @if (session('success'))
+            <div class="text-green-600 px-3 py-3 mx-3 my-3 w-fit border rounded-lg border-green-600 bg-green-200">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+        <div class="text-red-600 px-3 py-3 mx-3 my-3 w-fit border rounded-lg border-red-600 bg-red-200">
+            {{ session('error') }}
+        </div>
+        @endif
+
+
         <a href="{{ route('pets.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Add Pet</a>
 
 
@@ -82,7 +95,14 @@
                         <a class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full" href="">Edit</a>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">
-                        <a class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" href="">Delete</a>
+                        <form action="{{ route("pets.destroy", $pet['id']) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" >
+                                Delete
+                            </button>
+                        </form>
+                        
                     </td>
                 </tr>
             @endforeach

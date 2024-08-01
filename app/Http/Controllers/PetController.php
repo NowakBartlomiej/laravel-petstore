@@ -103,8 +103,15 @@ class PetController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        // delete pet
+        $response = Http::delete(config('constants.base_url') . '/pet/' . $id);
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Pet ' . $id .  ' deleted successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to delete pet ' . $id . '. Please try again.');
+        }
     }
 }
