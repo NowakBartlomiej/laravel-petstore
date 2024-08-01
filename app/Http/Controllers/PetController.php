@@ -76,10 +76,6 @@ class PetController extends Controller
         } else {
             return redirect("/pets?status=" . $request->status)->with('error', 'Failed to create pet ' . $request->name . '. Please try again.');
         }
-
-        // if ($response->status()) {
-        //     return redirect("/pets?status=" . $request->status);
-        // }
     }
 
     /**
