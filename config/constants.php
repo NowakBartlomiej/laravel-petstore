@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'base_url'  => 'petstore.swagger.io/v2',
+    'base_url'  => 'https://petstore.swagger.io/v2',
 ];
