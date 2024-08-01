@@ -5,9 +5,9 @@
 
 <body>
 <div>
-    
-    <form method="POST" action="{{ route('pets.store') }}" class="w-[50%] border border-gray-400 rounded-xl mx-10 my-10 px-5 py-5">
+    <form method="POST" action="{{ route('pets.update', $pet['id']) }}" class="w-[50%] border border-gray-400 rounded-xl mx-10 my-10 px-5 py-5">
         @csrf
+        @method('PUT')
         <h1 class="text-2xl pb-6">Add Pet</h1>
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="category">
@@ -24,7 +24,7 @@
             @endif
             <input
                 name="category"
-                value="{{ old('category') }}"
+                value="{{ isset($pet['category']) ? $pet['category']['name'] : "" }}"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="category" type="text" placeholder="Enter pet category">
         </div>
@@ -44,7 +44,7 @@
             @endif
             <input
                 name="name"
-                value="{{ old('name') }}"
+                value="{{ isset($pet['name']) ? $pet['name'] : "" }}"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="name" type="text" placeholder="Enter pet name">
         </div>
@@ -62,13 +62,13 @@
                     </ul>
                 </div>    
             @endif
-            
-            <input value="{{ old('photoUrls') == null ? "" : old('photoUrls')[0] }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]" id="photo1" placeholder="Enter pet photo url"/>
+
+            <input value="{{ isset($pet['photoUrls'][0]) ? $pet['photoUrls'][0] : "" }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]" id="photo1" placeholder="Enter pet photo url"/>
             <button id="addPhoto" class="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded-full">Add More Photos</button>
 
-            @if (old('photoUrls') != null && count(old('photoUrls')) > 1)
-                @for ($i = 1; $i < count(old('photoUrls')); $i++)
-                <div><input value="{{ old('photoUrls')[$i] }}" placeholder="Enter pet photo url" id="{{ "photo" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]"/><a href="#" class="remove_photo_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
+            @if ($pet['photoUrls'] != null && count($pet['photoUrls']) > 1)
+                @for ($i = 1; $i < count($pet['photoUrls']); $i++)
+                <div><input value="{{ $pet['photoUrls'][$i] }}" placeholder="Enter pet photo url" id="{{ "photo" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="photoUrls[]"/><a href="#" class="remove_photo_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
                 @endfor
             @endif
         </div>
@@ -86,12 +86,12 @@
             <label class="block text-gray-700 font-bold mb-2" for="service">
                 Tags
             </label>
-            <input value="{{ old('tags') == null ? "" : old('tags')[0] }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]" id="tag1" placeholder="Enter pet tag"/>
+
+            <input value="{{ isset($pet['tags'][0]['name']) ? $pet['tags'][0]['name'] : "" }}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]" id="tag1" placeholder="Enter pet tag"/>
             <button id="addTag" class="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded-full">Add More Tags</button>
-        
-            @if (old('tags') != null && count(old('tags')) > 1)
-                @for ($i = 1; $i < count(old('tags')); $i++)
-                    <div><input value="{{ old('tags')[$i] }}" placeholder="Enter pet photo url" id="{{ "tags" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]"/><a href="#" class="remove_tag_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
+            @if ($pet['tags'] != null && count($pet['tags']) > 1)
+                @for ($i = 1; $i < count($pet['tags']); $i++)
+                    <div><input value="{{ $pet['tags'][$i]['name'] }}" placeholder="Enter pet photo url" id="{{ "tags" . $i}}" class="mb-4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="tags[]"/><a href="#" class="remove_tag_field bg-red-500 hover:bg-red-400 ml-2 transition-colors text-white px-4 py-2 rounded-full">Remove</a></div>
                 @endfor
             @endif
         </div>
@@ -112,10 +112,10 @@
             <select
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="status" name="status">
-                <option value="">Select a status</option>
-                <option value="available" {{ old('status')=='available' ? 'selected' : ''  }}>available</option>
-                <option value="pending" {{ old('status')=='pending' ? 'selected' : ''  }}>pending</option>
-                <option value="sold" {{ old('status')=='sold' ? 'selected' : ''  }}>sold</option>
+                <option value="" {{ !isset($pet['status']) && 'selected' }}>Select a status</option>
+                <option value="available" {{ $pet['status']=='available' ? 'selected' : ''  }}>available</option>
+                <option value="pending" {{ $pet['status']=='pending' ? 'selected' : ''  }}>pending</option>
+                <option value="sold" {{ $pet['status']=='sold' ? 'selected' : ''  }}>sold</option>
             </select>
         </div>
 
@@ -163,7 +163,6 @@
         j--;
     })
 });
-    
 </script>
 
 </body>

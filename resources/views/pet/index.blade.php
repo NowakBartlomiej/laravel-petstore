@@ -92,7 +92,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">{{ $pet['status'] }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">
-                        <a class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full" href="">Edit</a>
+                        <a href="{{ route('pets.edit', $pet['id']) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full">Edit</a>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">
                         <form action="{{ route("pets.destroy", $pet['id']) }}" method="POST">

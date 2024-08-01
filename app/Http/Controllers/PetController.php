@@ -89,17 +89,65 @@ class PetController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $response = Http::get(config('constants.base_url') . '/pet/' . $id);
+        $pet = $response->json();
+
+        if ($response->successful()) {
+            return view('pet.edit', ['pet' => $pet]);
+        } else {
+            return redirect()->back()->with('error', 'Failed to update pet. Pet is probably deleted');
+        }
+       
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'category' => 'required|string|max:75',
+            'name' => 'required|string|max:75',
+            'photoUrls' => 'array',
+            'photoUrls.*' => 'string|max:350',
+            'tags' => 'array',
+            'tags.*' => 'string|max:75',
+            'status' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        
+        foreach($request->tags as $tag) {
+            $tags[] = array(
+                'name' => $tag
+            );
+        };
+        
+        $response = Http::withHeaders([
+            'accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ])->put(config('constants.base_url') . '/pet', [
+            'id' => $id,
+            'category' => [
+                'name' => $request->category
+            ],
+            'name' => $request->name,
+            'photoUrls' => $request->photoUrls,
+            'tags' => $tags,
+            'status' => $request->status
+        ]);
+
+        if ($response->successful()) {
+            return redirect("/pets?status=" . $request->status)->with('success', 'Pet ' . $request->name .  ' was updated successfully!');
+        } else {
+            return redirect("/pets?status=" . $request->status)->with('error', 'Failed to update pet ' . $request->name . '. Please try again.');
+        }
     }
 
     /**
