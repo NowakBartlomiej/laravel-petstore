@@ -61,7 +61,7 @@ class PetController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'accept' => 'application/json'
-        ])->post('https://petstore.swagger.io/v2/pet', [
+        ])->post(config('constants.base_url') . '/pet', [
             'category' => [
                 'name' => $request->category
             ],
@@ -71,9 +71,15 @@ class PetController extends Controller
             'status' => $request->status
         ]);
 
-        if ($response->status()) {
-            return redirect("/pets?status=" . $request->status);
+        if ($response->successful()) {
+            return redirect("/pets?status=" . $request->status)->with('success', 'Pet ' . $request->name .  ' was created successfully!');
+        } else {
+            return redirect("/pets?status=" . $request->status)->with('error', 'Failed to create pet ' . $request->name . '. Please try again.');
         }
+
+        // if ($response->status()) {
+        //     return redirect("/pets?status=" . $request->status);
+        // }
     }
 
     /**
