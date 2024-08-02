@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\StorePetRequest;
 use App\Http\Requests\UpdatePetRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 class PetService {
     public function mapTags($requestTags) {
@@ -15,6 +16,10 @@ class PetService {
         };
 
         return $tags;
+    }
+
+    public function getPetsByStatus($status) {
+        return Http::get(config('constants.base_url') . '/pet/findByStatus?status=' . $status);
     }
 
     public function storePet(StorePetRequest $request) {

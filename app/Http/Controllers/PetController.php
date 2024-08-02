@@ -18,10 +18,11 @@ class PetController extends Controller
      */
     public function index(Request $request)
     {
+        $petService = new PetService();
+
         $statusRequest = $request->input("status");
-        $response = Http::get(config('constants.base_url') . '/pet/findByStatus?status=' . $statusRequest);
+        $response = $petService->getPetsByStatus($statusRequest);
         $pets = $response->json();
-        
         
         return view('pet.index', compact('pets', 'statusRequest'));
     }
