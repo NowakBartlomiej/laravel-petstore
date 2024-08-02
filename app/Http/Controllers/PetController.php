@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePetRequest;
+use App\Http\Requests\UpdatePetRequest;
+use App\Services\PetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -34,43 +37,11 @@ class PetController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePetRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'category' => 'required|string|max:75',
-            'name' => 'required|string|max:75',
-            'photoUrls' => 'array',
-            'photoUrls.*' => 'string|max:350',
-            'tags' => 'array',
-            'tags.*' => 'string|max:75',
-            'status' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        foreach($request->tags as $tag) {
-            $tags[] = array(
-                'name' => $tag
-            );
-        };
-
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'accept' => 'application/json'
-        ])->post(config('constants.base_url') . '/pet', [
-            'category' => [
-                'name' => $request->category
-            ],
-            'name' => $request->name,
-            'photoUrls' => $request->photoUrls,
-            'tags' => $tags,
-            'status' => $request->status
-        ]);
-
+        $petService = new PetService();
+        $response = $petService->storePet($request);
+        
         if ($response->successful()) {
             return redirect("/pets?status=" . $request->status)->with('success', 'Pet ' . $request->name .  ' was created successfully!');
         } else {
@@ -91,7 +62,9 @@ class PetController extends Controller
      */
     public function edit($id)
     {
-        $response = Http::get(config('constants.base_url') . '/pet/' . $id);
+        $petService = new PetService();
+        $response = $petService->getPetById($id);
+
         $pet = $response->json();
 
         if ($response->successful()) {
@@ -105,44 +78,11 @@ class PetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePetRequest $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'category' => 'required|string|max:75',
-            'name' => 'required|string|max:75',
-            'photoUrls' => 'array',
-            'photoUrls.*' => 'string|max:350',
-            'tags' => 'array',
-            'tags.*' => 'string|max:75',
-            'status' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        $petService = new PetService();
+        $response = $petService->updatePet($request, $id);
         
-        foreach($request->tags as $tag) {
-            $tags[] = array(
-                'name' => $tag
-            );
-        };
-        
-        $response = Http::withHeaders([
-            'accept' => 'application/json',
-            'Content-Type' => 'application/json'
-        ])->put(config('constants.base_url') . '/pet', [
-            'id' => $id,
-            'category' => [
-                'name' => $request->category
-            ],
-            'name' => $request->name,
-            'photoUrls' => $request->photoUrls,
-            'tags' => $tags,
-            'status' => $request->status
-        ]);
-
         if ($response->successful()) {
             return redirect("/pets?status=" . $request->status)->with('success', 'Pet ' . $request->name .  ' was updated successfully!');
         } else {
@@ -155,8 +95,8 @@ class PetController extends Controller
      */
     public function destroy($id)
     {
-        // delete pet
-        $response = Http::delete(config('constants.base_url') . '/pet/' . $id);
+        $petService = new PetService();
+        $response = $petService->deletePet($id);
 
         if ($response->successful()) {
             return redirect()->back()->with('success', 'Pet ' . $id .  ' deleted successfully!');
